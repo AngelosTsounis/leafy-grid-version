@@ -1,0 +1,336 @@
+.dashboardmain {
+  grid-column: 2/3;
+  grid-row: 2/3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr 1fr;
+  gap: 20px;
+  padding: 25px;
+  margin-top: 20px;
+  grid-template-areas:
+    "c1 c1"
+    "c2 c3"
+    "c4 c5";
+}
+
+.card {
+  background-color: #f6f7f9;
+
+  border: transparent !important;
+}
+
+.card:nth-child(1) {
+  grid-area: c1;
+  border-radius: 4px;
+  height: 250px;
+  /* background-color: rgba(64, 156, 140, 255); */
+  background-image: url("/public/assets/Hero-Background.png");
+  background-size: cover;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px 20px 20px 20px;
+  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
+}
+.card:nth-child(2) {
+  grid-area: c2;
+  height: 200px;
+}
+.card:nth-child(3) {
+  grid-area: c3;
+  height: 270px;
+}
+
+.card:nth-child(4) {
+  grid-area: c4;
+  padding: 20px;
+}
+.card:nth-child(5) {
+  grid-area: c5;
+}
+.card:nth-child(6) {
+  grid-area: c6;
+}
+
+.input-wrapper {
+  font-size: 30px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.form-container {
+  display: flex;
+  margin-top: 20px;
+  color: white;
+  gap: 25px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 200px;
+}
+.input-group textarea {
+  background-color: rgb(255, 255, 255);
+  width: 200px;
+  border: transparent;
+  resize: none;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border: transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.dashboard_btn {
+  background-color: #fff;
+  border: 2px solid transparent;
+  padding: 10px 15px;
+  color: rgb(36, 160, 123);
+  font-size: 16px;
+  border-radius: 10px 10px 10px 10px;
+  transition: 0.4s;
+  margin-top: 25px;
+  position: relative;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: -0.4%;
+}
+
+.dashboard_btn:hover {
+  background-color: rgba(64, 156, 140, 255);
+  color: #fff;
+  border: 2px solid white;
+}
+
+/* =====================Progress Card========================================= */
+/* =====================Progress Card========================================= */
+
+.progress-container,
+.next-rank-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+
+  gap: 25px;
+}
+
+.progress-title {
+  font-size: 19px;
+  margin-bottom: 10px;
+  color: rgba(64, 156, 140, 255);
+}
+
+.progrees-p {
+  margin-top: -8px;
+  font-size: 20px;
+  font-weight: 300;
+}
+.total-items-recycled {
+  border-right: 2px solid rgb(216, 215, 215);
+  width: 300px;
+  height: 100px;
+}
+.most-common-product {
+  border-right: 2px solid rgb(216, 215, 215);
+  width: 320px;
+  height: 100px;
+}
+.current-reward {
+  width: 320px;
+  height: 100px;
+}
+
+/* =====================Progress Card========================================= */
+/* =====================Progress Card========================================= */
+
+/* =====================Next Rank========================================= */
+/* =====================Next Rank========================================= */
+
+.next-rank-container {
+  flex: 1;
+  display: flex;
+  text-align: start;
+
+  padding: 20px;
+
+  /* overflow: hidden; */
+}
+.next-rank-content-grid {
+  position: relative;
+  top: 8%;
+}
+.next-rank-content-grid h1 {
+  color: rgb(100, 100, 100);
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  text-align: left;
+}
+
+.next-rank-content-grid p {
+  font-size: 20px;
+  margin: 0;
+  text-align: left;
+  font-weight: 500;
+  align-items: center;
+  justify-content: center;
+  color: rgb(46, 46, 46);
+}
+.challenger {
+  font-size: 32px !important;
+  color: rgba(64, 156, 140, 255) !important;
+  font-weight: 600 !important;
+}
+
+.next-rank-image {
+  width: 100%;
+  height: auto;
+  max-width: 220px;
+  max-height: 220px;
+  border-radius: 50%;
+  object-fit: cover;
+  overflow: hidden;
+  position: relative;
+  left: 10%;
+}
+
+.next-rank-rupee {
+  width: 25px;
+  margin-bottom: 5px;
+}
+.next-rank-50 {
+  color: rgba(64, 156, 140, 255);
+}
+
+/* =====================Next Rank========================================= */
+/* =====================Next Rank========================================= */
+
+/* =====================Card 4========================================= */
+/* =====================Card 4========================================= */
+
+.recent-recycle-header h1 {
+  color: rgba(64, 156, 140, 255);
+}
+.recent-recycle-results {
+  margin-top: 60px;
+}
+
+.item-1 {
+  width: 350px;
+  height: 100px;
+  background-color: rgb(177, 85, 85);
+  font-weight: 500;
+  align-items: center;
+  display: flex;
+  border-radius: 30px;
+}
+.item-2 {
+  width: 350px;
+  height: 100px;
+  background-color: rgb(177, 85, 85);
+
+  align-items: center;
+  display: flex;
+  border-radius: 30px;
+}
+.recent-recycle-results h1 {
+  margin-left: 20px;
+  font-weight: 400;
+  color: #fff;
+}
+
+/* =====================Quote Section========================================= */
+/* =====================Quote Section========================================= */
+
+.quote-section {
+  width: 800px;
+  margin-top: 30px;
+  border-left: 3px solid rgb(216, 216, 216);
+  padding: 20px;
+  max-width: 100%;
+}
+
+.quote-section h3 {
+  color: #838383;
+  font-weight: 400;
+  font-size: 26px;
+}
+.quote-section p {
+  font-weight: 700;
+  color: rgba(64, 156, 140, 255);
+}
+
+/* =====================Media Section========================================= */
+/* =====================Media Section========================================= */
+@media (min-width: 1880px) {
+  .recent-recycle-results h1 {
+    font-size: 24px;
+  }
+  .recent-recycle-header h1 {
+    font-size: 30px;
+  }
+}
+
+@media (min-width: 2520px) {
+  .card:nth-child(1) {
+    width: 95%;
+  }
+  .card:nth-child(2) {
+    width: 95%;
+  }
+  .card:nth-child(3) {
+    width: 85%;
+  }
+  .card:nth-child(4) {
+    width: 90%;
+  }
+  .progress-title {
+    font-size: 26px;
+  }
+  .progrees-p {
+    font-size: 30px;
+  }
+  .next-rank-content-grid h1 {
+    font-size: 18px;
+  }
+  .next-rank-content-grid p {
+    font-size: 30px;
+  }
+  .next-rank-image {
+    left: 18%;
+  }
+}
+
+@media (max-width: 1224px) {
+  .dashboardmain {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 300px);
+    grid-template-areas: initial;
+  }
+  .card {
+    grid-area: initial !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardmain {
+    grid-column: 1/3;
+  }
+}

@@ -1,0 +1,33 @@
+:root {
+  --theme-color: #ad9880;
+  --text-color: #4c4c4c;
+  --text2-color: #645c5c;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  background: transparent;
+}
+
+body {
+  overflow: hidden;
+  overflow-y: scroll;
+  margin: 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+html,
+body {
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: rgba(229, 203, 173, 0.932);
+}

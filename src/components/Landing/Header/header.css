@@ -1,0 +1,37 @@
+.navbar-link {
+  font-size: 1.2rem; /* Adjust the font size as needed */
+  margin-right: 1rem; /* Adjust the margin between links */
+}
+
+.navbar-button {
+  font-size: 1.2rem; /* Adjust the font size as needed */
+  margin-left: 1rem; /* Adjust the margin to the left of the button */
+}
+
+.nav {
+  gap: 0.8rem;
+}
+
+.btn {
+  background-color: rgb(36, 160, 123) !important;
+  border-radius: 20px 20px 20px 20px !important;
+  width: 170px;
+  border-color: transparent !important;
+}
+
+.btn:hover {
+  background-color: rgb(106, 160, 36) !important;
+  border-color: transparent;
+}
+
+.logo {
+  object-fit: cover;
+  width: 180px;
+}
+
+@media (min-width: 1500px) {
+  .logo {
+    position: relative;
+    right: 140px;
+  }
+}
