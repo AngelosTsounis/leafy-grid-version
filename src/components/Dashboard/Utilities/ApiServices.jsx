@@ -40,3 +40,16 @@ export const updateRecyclingActivity = async (id, data) => {
     throw error;
   }
 };
+
+//Function that calls the totalQuantity and mostCommonMaterial used
+export const getRecyclingSummary = async () => {
+  try {
+    const response = await axios.get(
+      "https://localhost:7007/api/recyclingActivity/summary"
+    );
+    return response.data; // Return the summary data
+  } catch (error) {
+    console.error("Error in getRecyclingSummary:", error);
+    throw error;
+  }
+};

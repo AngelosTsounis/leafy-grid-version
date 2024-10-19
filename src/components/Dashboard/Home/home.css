@@ -52,6 +52,12 @@
   grid-area: c6;
 }
 
+.error-text {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
 .input-wrapper {
   font-size: 30px;
   font-weight: 600;

@@ -1,17 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { submitRecyclingData } from "../Utilities/ApiServices";
 import "./home.css";
 
 const Home = () => {
-  const [material, setMaterial] = useState("");
+  const [material, setMaterial] = useState("Plastic");
   const [quantity, setQuantity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  // State for total quantity and most common material
+  const [totalQuantity, setTotalQuantity] = useState(null); // Initially null
+  const [mostCommonMaterial, setMostCommonMaterial] = useState(null); // Initially null
+
+  const handleQuantityChange = (e) => {
+    setQuantity(e.target.value);
+  };
+
+  const validateQuantity = (quantity) => {
+    const regex = /^[0-9]*\.?[0-9]+$/;
+    return regex.test(quantity);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!quantity || !validateQuantity(quantity)) {
+      alert("Please enter a valid numeric quantity (e.g., 10 or 20.5).");
+      return;
+    }
+
     setIsLoading(true);
-    setError(null);
     const data = {
       materialType: material,
       quantity: quantity,
@@ -22,14 +39,42 @@ const Home = () => {
       if (response.status === 201) {
         console.log("Success:", response.data);
         alert("Data submitted successfully!");
+        setQuantity(""); // Clear input field after success
+
+        // Reload the page to fetch updated data
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error:", error);
-      setError("Error submitting data. Please try again.");
+      alert("Error submitting data. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Fetch recycling summary (total items recycled, most common product) from the API
+  useEffect(() => {
+    const fetchRecyclingSummary = async () => {
+      try {
+        const response = await fetch(
+          "https://localhost:7007/api/recyclingActivity/summary"
+        );
+        const data = await response.json();
+
+        console.log("API Response:", data); // Debugging: Check the structure of the response
+
+        // Ensure that the data contains valid values and set state accordingly
+        setTotalQuantity(data.totalQuantity || 0); // Using 'totalQuantity' as per API response
+        setMostCommonMaterial(
+          data.mostCommonMaterial || { materialType: "Unknown", percentage: 0 }
+        ); // Using 'materialType'
+      } catch (error) {
+        console.error("Error fetching recycling summary:", error);
+      }
+    };
+
+    fetchRecyclingSummary();
+  }, []); // Empty dependency array means it runs once after component mounts
 
   return (
     <>
@@ -61,9 +106,9 @@ const Home = () => {
                 name="quantity"
                 rows="2"
                 cols="1"
-                placeholder="10 kg, 20kg etc."
+                placeholder="Enter quantity (e.g., 10 kg)"
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={handleQuantityChange}
               ></textarea>
             </div>
           </div>
@@ -74,33 +119,43 @@ const Home = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Submitting..." : "Submit"}{" "}
-              {/* Button text changes */}
+              {isLoading ? "Submitting..." : "Submit"}
             </button>
           </div>
-
-          {/* Show error message if present */}
-          {error && <p className="error-message">{error}</p>}
         </div>
 
-        {/* The rest of your components */}
+        {/* Display Total Items Recycled and Most Common Material */}
         <div className="card">
           <div className="progress-container">
             <div className="total-items-recycled">
               <h1 className="progress-title">Total Items Recycled</h1>
-              <p className="progress-p">88kg</p>
+              {/* Add fallback to display "Loading..." until the API response is received */}
+              <p className="progress-p">
+                {totalQuantity !== null ? `${totalQuantity} kg` : "Loading..."}
+              </p>
             </div>
             <div className="most-common-product">
               <h1 className="progress-title">Most common product</h1>
-              <p className="progress-p">55% Glass</p>
+              {/* Add fallback to display "Loading..." until mostCommonMaterial is available */}
+              {mostCommonMaterial &&
+              mostCommonMaterial.materialType !== "Unknown" ? (
+                <p className="progress-p">
+                  {mostCommonMaterial.percentage.toFixed(2)}%{" "}
+                  {mostCommonMaterial.materialType}
+                </p>
+              ) : (
+                <p className="progress-p">Loading...</p>
+              )}
             </div>
             <div className="current-reward">
               <h1 className="progress-title">Current reward</h1>
-              <p className="progress-p">Bonsai Tree</p>
+              <p className="progress-p">Bonsai Tree</p>{" "}
+              {/* This seems static for now */}
             </div>
           </div>
         </div>
 
+        {/* Other parts of the dashboard, unchanged */}
         <div className="card">
           <div className="next-rank-container">
             <div className="next-rank-content-grid">
