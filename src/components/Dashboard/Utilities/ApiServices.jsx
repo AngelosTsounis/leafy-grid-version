@@ -1,11 +1,27 @@
 import axios from "axios";
 
+// Base API URL
+const API_URL = "https://localhost:7007/api";
+
+// Helper function to get the JWT token from localStorage
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token) {
+    throw new Error("No authentication token found. Please log in.");
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+};
+
 // Function to submit recycling data
 export const submitRecyclingData = async (data) => {
   try {
     const response = await axios.post(
-      "https://localhost:7007/api/recyclingActivity/create",
-      data
+      `${API_URL}/recyclingActivity`,
+      data,
+      { headers: getAuthHeaders() } // Include auth headers
     );
     return response;
   } catch (error) {
@@ -17,9 +33,9 @@ export const submitRecyclingData = async (data) => {
 // Function to fetch all recycling activities
 export const getAllRecyclingActivities = async () => {
   try {
-    const response = await axios.get(
-      "https://localhost:7007/api/recyclingActivity/getAll"
-    );
+    const response = await axios.get(`${API_URL}/recyclingActivity`, {
+      headers: getAuthHeaders(), // Include auth headers
+    });
     return response.data;
   } catch (error) {
     console.error("Error in getAllRecyclingActivities:", error);
@@ -27,12 +43,13 @@ export const getAllRecyclingActivities = async () => {
   }
 };
 
-//Function to update recycling activity
+// Function to update recycling activity
 export const updateRecyclingActivity = async (id, data) => {
   try {
     const response = await axios.put(
-      `https://localhost:7007/api/recyclingActivity/update/${id}`,
-      data
+      `${API_URL}/recyclingActivity/${id}`,
+      data,
+      { headers: getAuthHeaders() } // Include auth headers
     );
     return response;
   } catch (error) {
@@ -41,15 +58,30 @@ export const updateRecyclingActivity = async (id, data) => {
   }
 };
 
-//Function that calls the totalQuantity and mostCommonMaterial used
+// Function to fetch the totalQuantity and mostCommonMaterial used
 export const getRecyclingSummary = async () => {
   try {
-    const response = await axios.get(
-      "https://localhost:7007/api/recyclingActivity/summary"
-    );
+    const response = await axios.get(`${API_URL}/recyclingActivity/summary`, {
+      headers: getAuthHeaders(), // Include auth headers
+    });
     return response.data; // Return the summary data
   } catch (error) {
     console.error("Error in getRecyclingSummary:", error);
     throw error;
+  }
+};
+
+// Create a function for updating user profile
+export const updateProfile = async (id, data) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/auth/${id}`, // Use the correct API endpoint for updating user
+      data,
+      { headers: getAuthHeaders() } // Ensure auth headers are set
+    );
+    return response;
+  } catch (error) {
+    console.error("Error in updating profile:", error);
+    throw error; // Rethrow to handle it in the calling function
   }
 };

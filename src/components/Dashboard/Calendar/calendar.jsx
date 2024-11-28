@@ -52,7 +52,7 @@ const Calendar = () => {
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setUpdatedActivity({ ...updatedActivity, [id]: value }); // Update the relevant field
+    setUpdatedActivity({ ...updatedActivity, [id]: value });
   };
 
   const handleSaveChanges = async () => {
@@ -70,6 +70,16 @@ const Calendar = () => {
     } catch (error) {
       console.error("Failed to update activity:", error);
     }
+  };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date
+      .toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      })
+      .replace(",", ""); // Remove comma if necessary
   };
 
   return (
@@ -138,6 +148,8 @@ const Calendar = () => {
               >
                 <p>Material Type: {activity.materialType}</p>
                 <p>Quantity Recycled: {activity.quantity}</p>
+                <p>Date: {formatDate(activity.date)}</p>{" "}
+                {/* Display formatted date */}
               </div>
             </div>
           ))}

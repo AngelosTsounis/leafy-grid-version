@@ -1,69 +1,127 @@
 import React, { useState, useEffect } from "react";
 import { Route, Routes, Link } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
-import DashboardHome from "../components/Dashboard/Home/home";
-import Calendar from "../components/Dashboard/Calendar/calendar";
-import SidebarData from "../components/Dashboard/Utilities/SidebarData";
-import "../components/Dashboard/Utilities/Sidebar.css";
 import { IconContext } from "react-icons";
-import logo from "/public/assets/logo.png";
-import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
+import DashboardHome from "../components/Dashboard/Home/home";
+import Calendar from "../components/Dashboard/Calendar/calendar";
+import SidebarData from "../components/Dashboard/Utilities/SidebarData";
+import {
+  getAllRecyclingActivities,
+  updateProfile,
+} from "../components/Dashboard/Utilities/ApiServices";
+
+import "../components/Dashboard/Utilities/Sidebar.css";
+import logo from "/public/assets/logo.png";
+
 const Dashboard = () => {
+  const [profile, setProfile] = useState({
+    username: "",
+    email: "",
+    password: "",
+    newPassword: "",
+  });
   const [sidebar, setSidebar] = useState(true);
   const [activeItem, setActiveItem] = useState(null);
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
-  const [profile, setProfile] = useState({
-    username: "Angel",
-    email: "angel@example.com",
-    location: "New York",
-    password: "",
-  });
+  const [pointsAwarded, setPointsAwarded] = useState(0);
 
+  // Fetch user profile
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 86400000);
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) throw new Error("No token found.");
 
-    return () => clearInterval(timer);
+        const response = await fetch("https://localhost:7007/api/auth/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok)
+          throw new Error(`Failed to fetch profile: ${response.status}`);
+        const userData = await response.json();
+        setProfile(userData);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
-  const formatDate = (date) => {
-    const options = {
+  // Fetch user recycling activities and calculate total points
+  useEffect(() => {
+    const fetchUserPoints = async () => {
+      try {
+        const data = await getAllRecyclingActivities(); // Or your endpoint for user activities
+        if (data && Array.isArray(data.items)) {
+          // Assume backend already calculates and includes total points
+          setPointsAwarded(
+            data.items.reduce(
+              (sum, activity) => sum + activity.pointsAwarded,
+              0
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch user points:", error);
+      }
+    };
+
+    fetchUserPoints();
+  }, []);
+
+  // Handle profile update
+  const handleSaveChanges = async () => {
+    const { username, email, password, newPassword, id } = profile;
+
+    if (!id || !username.trim() || !email.trim()) {
+      alert("Username, Email, and ID cannot be empty.");
+      return;
+    }
+
+    try {
+      await updateProfile(id, {
+        username: username.trim(),
+        email: email.trim(),
+        passwordHash: newPassword?.trim() || password?.trim() || "",
+      });
+      alert("Profile updated successfully.");
+      setShowModal(false);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile.");
+    }
+  };
+
+  // Input handler
+  const handleInputChange = ({ target: { name, value } }) => {
+    setProfile((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Utilities
+  const toggleSidebar = () => setSidebar((prev) => !prev);
+  const handleMenuItemClick = (index) => {
+    SidebarData[index].title === "My Profile"
+      ? setShowModal(true)
+      : setActiveItem(index);
+  };
+  const handleClose = () => setShowModal(false);
+
+  const formatDate = (date) =>
+    date.toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
-    };
-    return date.toLocaleDateString("en-US", options);
-  };
-
-  const toggleSidebar = () => setSidebar(!sidebar);
-
-  const handleMenuItemClick = (index) => {
-    // If "My Profile" is clicked, open the modal
-    if (SidebarData[index].title === "My Profile") {
-      setShowModal(true); // Open the modal for profile
-    } else {
-      setActiveItem(index);
-    }
-  };
-
-  // Handlers for modal visibility
-  const handleClose = () => setShowModal(false);
-
-  // Handlers for input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProfile((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+    });
 
   return (
     <div className="body">
@@ -72,10 +130,10 @@ const Dashboard = () => {
           <img src={logo} className="dashboard_logo" alt="Logo" />
           <div className="navbar-greeting">
             <h1 className="greeting">Hello, {profile.username}</h1>
-            <p className="greeting2">Today is {formatDate(currentDate)}</p>
+            <p className="greeting2">Today is {formatDate(new Date())}</p>
           </div>
         </div>
-        <div className={sidebar ? "nav-menu active" : "nav-menu"}>
+        <div className={`nav-menu ${sidebar ? "active" : ""}`}>
           <div className="pointsEarned">
             <img
               className="rankingImg"
@@ -83,7 +141,7 @@ const Dashboard = () => {
               alt="Rupee"
             />
             <span className="points-number" id="currentPoints">
-              45
+              {pointsAwarded ?? 0}
             </span>
           </div>
           <div className="current-rank-wrapper">
@@ -118,74 +176,35 @@ const Dashboard = () => {
       <Routes>
         <Route path="home" element={<DashboardHome />} />
         <Route path="calendar" element={<Calendar />} />
-        {/* Add more routes as necessary */}
       </Routes>
 
-      {/* Modal for Profile */}
+      {/* Modal */}
       <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton className="modal-header-custom">
+        <Modal.Header closeButton>
           <Modal.Title>Edit Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formUsername">
-              <Form.Label>Username</Form.Label>
-              <Form.Control
-                type="text"
-                name="username"
-                value={profile.username}
-                onChange={handleInputChange}
-                className="input-custom"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={profile.email}
-                onChange={handleInputChange}
-                className="input-custom"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formLocation">
-              <Form.Label>Location</Form.Label>
-              <Form.Control
-                type="text"
-                name="location"
-                value={profile.location}
-                onChange={handleInputChange}
-                className="input-custom"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                value={profile.password}
-                onChange={handleInputChange}
-                className="input-custom"
-              />
-            </Form.Group>
+            {["username", "email", "newPassword"].map((field) => (
+              <Form.Group key={field} controlId={`form${field}`}>
+                <Form.Label>
+                  {field === "newPassword" ? "New Password" : field}
+                </Form.Label>
+                <Form.Control
+                  type={field.includes("password") ? "password" : "text"}
+                  name={field}
+                  value={profile[field]}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+            ))}
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            className="btn-secondary-custom"
-          >
+          <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button
-            variant="primary"
-            onClick={handleClose}
-            className="btn-primary-custom"
-          >
+          <Button variant="primary" onClick={handleSaveChanges}>
             Save Changes
           </Button>
         </Modal.Footer>

@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { submitRecyclingData } from "../Utilities/ApiServices";
+import {
+  submitRecyclingData,
+  getAllRecyclingActivities,
+} from "../Utilities/ApiServices";
 import "./home.css";
 
 const Home = () => {
   const [material, setMaterial] = useState("Plastic");
   const [quantity, setQuantity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [totalQuantity, setTotalQuantity] = useState(null);
+  const [mostCommonMaterial, setMostCommonMaterial] = useState(null);
+  const [recentActivities, setRecentActivities] = useState([]);
+  // const [newTask, setNewTask] = useState(""); // For input value
+  // const [tasks, setTasks] = useState([]); // For task list
 
-  // State for total quantity and most common material
-  const [totalQuantity, setTotalQuantity] = useState(null); // Initially null
-  const [mostCommonMaterial, setMostCommonMaterial] = useState(null); // Initially null
+  // const addTask = () => {
+  //   if (newTask.trim()) {
+  //     setTasks([...tasks, newTask.trim()]); // Add task to the list
+  //     setNewTask(""); // Clear input
+  //   }
+  // };
+
+  // const removeTask = (index) => {
+  //   const updatedTasks = tasks.filter((_, i) => i !== index); // Remove task by index
+  //   setTasks(updatedTasks);
+  // };
 
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value);
@@ -28,6 +44,12 @@ const Home = () => {
       return;
     }
 
+    const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
+    console.log("JWT Token in handleSubmit:", token); // Log the token here
+    if (!token) {
+      return;
+    }
+
     setIsLoading(true);
     const data = {
       materialType: material,
@@ -35,7 +57,7 @@ const Home = () => {
     };
 
     try {
-      const response = await submitRecyclingData(data);
+      const response = await submitRecyclingData(data, token);
       if (response.status === 201) {
         console.log("Success:", response.data);
         alert("Data submitted successfully!");
@@ -52,12 +74,22 @@ const Home = () => {
     }
   };
 
-  // Fetch recycling summary (total items recycled, most common product) from the API
+  // Fetch recycling summary from the API
   useEffect(() => {
     const fetchRecyclingSummary = async () => {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        return;
+      }
+
       try {
         const response = await fetch(
-          "https://localhost:7007/api/recyclingActivity/summary"
+          "https://localhost:7007/api/recyclingActivity/summary",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         const data = await response.json();
 
@@ -74,6 +106,36 @@ const Home = () => {
     };
 
     fetchRecyclingSummary();
+  }, []); // Empty dependency array means it runs once after component mounts
+
+  // Fetch recent recycling activities
+  useEffect(() => {
+    const fetchRecentActivities = async () => {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        return;
+      }
+
+      try {
+        const data = await getAllRecyclingActivities(token); // Pass token to API service
+
+        // Assuming data has the required structure
+        if (data && Array.isArray(data.items)) {
+          // Set recent activities to the last two items
+          const sortedActivities = data.items.sort(
+            (a, b) => new Date(b.date) - new Date(a.date)
+          );
+          setRecentActivities(sortedActivities.slice(0, 2)); // Get the last two items
+        } else {
+          console.error("Fetched data does not contain items array:", data);
+          setRecentActivities([]);
+        }
+      } catch (error) {
+        console.error("Error fetching recent activities:", error);
+      }
+    };
+
+    fetchRecentActivities();
   }, []); // Empty dependency array means it runs once after component mounts
 
   return (
@@ -129,14 +191,12 @@ const Home = () => {
           <div className="progress-container">
             <div className="total-items-recycled">
               <h1 className="progress-title">Total Items Recycled</h1>
-              {/* Add fallback to display "Loading..." until the API response is received */}
               <p className="progress-p">
                 {totalQuantity !== null ? `${totalQuantity} kg` : "Loading..."}
               </p>
             </div>
             <div className="most-common-product">
-              <h1 className="progress-title">Most common product</h1>
-              {/* Add fallback to display "Loading..." until mostCommonMaterial is available */}
+              <h1 className="progress-title">Most Common Product</h1>
               {mostCommonMaterial &&
               mostCommonMaterial.materialType !== "Unknown" ? (
                 <p className="progress-p">
@@ -148,14 +208,11 @@ const Home = () => {
               )}
             </div>
             <div className="current-reward">
-              <h1 className="progress-title">Current reward</h1>
-              <p className="progress-p">Bonsai Tree</p>{" "}
-              {/* This seems static for now */}
+              <h1 className="progress-title">Current Reward</h1>
+              <p className="progress-p">Bonsai Tree</p>
             </div>
           </div>
         </div>
-
-        {/* Other parts of the dashboard, unchanged */}
         <div className="card">
           <div className="next-rank-container">
             <div className="next-rank-content-grid">
@@ -194,12 +251,17 @@ const Home = () => {
             <h1>Recently Recycled</h1> <a href="#">View More</a>
           </div>
           <div className="recent-recycle-results d-flex justify-content-sm-around">
-            <div className="item-1">
-              <h1>Glass: 50kg</h1>
-            </div>
-            <div className="item-2">
-              <h1>Paper: 300kg</h1>
-            </div>
+            {recentActivities.length > 0 ? (
+              recentActivities.map((activity, index) => (
+                <div key={index} className={`item-${index + 1}`}>
+                  <h1>
+                    {activity.materialType}: {activity.quantity}kg
+                  </h1>
+                </div>
+              ))
+            ) : (
+              <p>No recent recycling activities available.</p>
+            )}
           </div>
         </div>
 
