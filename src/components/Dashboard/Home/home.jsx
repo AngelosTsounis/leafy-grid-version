@@ -4,28 +4,17 @@ import {
   getAllRecyclingActivities,
 } from "../Utilities/ApiServices";
 import "./home.css";
+import { calculateRanks } from "../Utilities/RankUnits";
 
 const Home = () => {
   const [material, setMaterial] = useState("Plastic");
   const [quantity, setQuantity] = useState("");
+  const [location, setLocation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [totalQuantity, setTotalQuantity] = useState(null);
   const [mostCommonMaterial, setMostCommonMaterial] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
-  // const [newTask, setNewTask] = useState(""); // For input value
-  // const [tasks, setTasks] = useState([]); // For task list
-
-  // const addTask = () => {
-  //   if (newTask.trim()) {
-  //     setTasks([...tasks, newTask.trim()]); // Add task to the list
-  //     setNewTask(""); // Clear input
-  //   }
-  // };
-
-  // const removeTask = (index) => {
-  //   const updatedTasks = tasks.filter((_, i) => i !== index); // Remove task by index
-  //   setTasks(updatedTasks);
-  // };
+  const [nextRank, setNextRank] = useState(null);
 
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value);
@@ -54,6 +43,7 @@ const Home = () => {
     const data = {
       materialType: material,
       quantity: quantity,
+      location: location,
     };
 
     try {
@@ -76,11 +66,9 @@ const Home = () => {
 
   // Fetch recycling summary from the API
   useEffect(() => {
-    const fetchRecyclingSummary = async () => {
+    const fetchTotalPoints = async () => {
       const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        return;
-      }
+      if (!token) return;
 
       try {
         const response = await fetch(
@@ -92,21 +80,28 @@ const Home = () => {
           }
         );
         const data = await response.json();
+        console.log("API Response:", data); // Log the entire response for debugging
 
-        console.log("API Response:", data); // Debugging: Check the structure of the response
+        // Extract the totalPoints correctly
+        const totalPoints = data.mostCommonMaterial?.totalPoints || 0; // Access totalPoints from mostCommonMaterial
+        console.log("Cumulative Points from Backend:", totalPoints); // Debugging the extracted points
 
-        // Ensure that the data contains valid values and set state accordingly
-        setTotalQuantity(data.totalQuantity || 0); // Using 'totalQuantity' as per API response
+        // Calculate current and next ranks
+        const { currentRank, nextRank } = calculateRanks(totalPoints);
+
+        // Update state with new values
+        setTotalQuantity(totalPoints); // Use totalPoints here for display
         setMostCommonMaterial(
           data.mostCommonMaterial || { materialType: "Unknown", percentage: 0 }
-        ); // Using 'materialType'
+        );
+        setNextRank(nextRank);
       } catch (error) {
-        console.error("Error fetching recycling summary:", error);
+        console.error("Error fetching total points:", error);
       }
     };
 
-    fetchRecyclingSummary();
-  }, []); // Empty dependency array means it runs once after component mounts
+    fetchTotalPoints();
+  }, []); // Fetch once on component mount
 
   // Fetch recent recycling activities
   useEffect(() => {
@@ -137,7 +132,19 @@ const Home = () => {
 
     fetchRecentActivities();
   }, []); // Empty dependency array means it runs once after component mounts
+  useEffect(() => {
+    // Default pointsAwarded to 0 if totalQuantity is null or undefined
+    const pointsAwarded = totalQuantity ?? 0; // Safeguard for nullish values
+    const { currentRank, nextRank } = calculateRanks(pointsAwarded);
 
+    // Log for debugging
+    console.log("Points Awarded:", pointsAwarded);
+    console.log("Current Rank:", currentRank);
+    console.log("Next Rank:", nextRank);
+
+    // Set state with next rank details
+    setNextRank(nextRank);
+  }, [totalQuantity]); // Trigger recalculation whenever totalQuantity changes
   return (
     <>
       <div className="dashboardmain">
@@ -171,6 +178,19 @@ const Home = () => {
                 placeholder="Enter quantity (e.g., 10 kg)"
                 value={quantity}
                 onChange={handleQuantityChange}
+              ></textarea>
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="location">Enter Location</label>
+              <textarea
+                id="location"
+                name="location"
+                rows="2"
+                cols="1"
+                placeholder="Enter city or country"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
               ></textarea>
             </div>
           </div>
@@ -217,35 +237,42 @@ const Home = () => {
           <div className="next-rank-container">
             <div className="next-rank-content-grid">
               <h1>Next Rank</h1>
-              <p className="challenger">Challenger</p>
-              <div className="d-flex gap-3 mt-2 next-rank-requirements">
-                <div>
-                  <h1 className="">Requirements:</h1>
-                  <p className="mt-2">
-                    <img
-                      className="next-rank-rupee"
-                      src="/assets/PurpleRupee.png"
-                      alt="Rupee"
-                    />
-                    <span className="next-rank-50">50</span>
-                  </p>
-                </div>
-                <div>
-                  <h1>Reward:</h1>
-                  <p className="mt-2">
-                    <span className="next-rank-50">Deku Tree</span>
-                  </p>
-                </div>
-              </div>
+              {nextRank ? (
+                <>
+                  <p className="challenger">{nextRank.name}</p>
+                  <div className="d-flex gap-3 mt-2 next-rank-requirements">
+                    <div>
+                      <h1>Requirements:</h1>
+                      <p className="mt-2">
+                        <img
+                          className="next-rank-rupee"
+                          src="/assets/PurpleRupee.png"
+                          alt="Rupee"
+                        />
+                        <span className="next-rank-50">
+                          {nextRank.minPoints}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <h1>Reward:</h1>
+                      <p className="mt-2">
+                        <span className="next-rank-50">{nextRank.reward}</span>
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="challenger">No next rank available</p>
+              )}
             </div>
             <img
               className="next-rank-image"
-              src="/assets/helmarocking.jpg"
-              alt="Helmarocking"
+              src={nextRank ? nextRank.image : "/assets/placeholder.jpg"}
+              alt="Next Rank"
             />
           </div>
         </div>
-
         <div className="card">
           <div className="recent-recycle-header d-flex align-items-center justify-content-sm-between">
             <h1>Recently Recycled</h1> <a href="#">View More</a>
@@ -266,14 +293,30 @@ const Home = () => {
         </div>
 
         <div className="card">
-          <div className="quote-section">
-            <h3>
-              "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae
-              maiores vel repellendus rem odio, ratione, ea asperiores dolor
-              ipsum doloribus nesciunt! Officia numquam non aliquid doloremque
-              corporis adipisci sequi dolores!"
-            </h3>
-            <p>Angel Tsounis</p>
+          <div className="rules-section">
+            <h3 className="rules-title">🎉 Recycling Rules for Points! ♻️</h3>
+            <ul className="rules-list">
+              <li>
+                <span className="material-name">🪟 Glass:</span>{" "}
+                <span className="points">2-10 kg = 2 points</span>
+              </li>
+              <li>
+                <span className="material-name">🛍️ Plastic:</span>{" "}
+                <span className="points">1-5 kg = 3 points</span>
+              </li>
+              <li>
+                <span className="material-name">🔧 Metal:</span>{" "}
+                <span className="points">5-15 kg = 4 points</span>
+              </li>
+              <li>
+                <span className="material-name">📜 Paper:</span>{" "}
+                <span className="points">10-20 kg = 5 points</span>
+              </li>
+            </ul>
+            <p className="footer-note">
+              🌟 The more you recycle, the more you earn! Let's make the planet
+              happy! 🌍
+            </p>
           </div>
         </div>
       </div>

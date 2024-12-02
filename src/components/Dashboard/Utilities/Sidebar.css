@@ -88,9 +88,10 @@
 .current-rank-wrapper {
   position: absolute;
   top: 310px;
-  left: 50px;
   display: grid;
   text-align: center;
+  align-items: center;
+  width: 250px;
 }
 .current-rank-text {
   font-weight: 700;

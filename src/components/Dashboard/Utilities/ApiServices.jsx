@@ -85,3 +85,30 @@ export const updateProfile = async (id, data) => {
     throw error; // Rethrow to handle it in the calling function
   }
 };
+
+export const deleteActivity = async (id) => {
+  try {
+    const token = localStorage.getItem("jwtToken"); // Retrieve JWT token
+    const response = await fetch(
+      `https://localhost:7007/api/recyclingActivity/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token for authorization
+        },
+      }
+    );
+
+    if (response.ok) {
+      console.log(`Activity with ID ${id} deleted successfully.`);
+      return true; // Return success
+    } else {
+      const errorMessage = await response.text();
+      console.error(`Failed to delete activity: ${errorMessage}`);
+      return false; // Return failure
+    }
+  } catch (error) {
+    console.error("Error deleting activity:", error);
+    return false; // Return failure
+  }
+};

@@ -36,17 +36,15 @@
 
 .box {
   width: 100%; /* Adjust to fill available space */
-  height: 100px;
   transition: transform 0.5s ease, opacity 0.5s ease;
   display: flex;
   justify-content: center; /* Horizontally center content */
   align-items: center; /* Vertically center content */
-  border-radius: 50px;
+  border-radius: 20px;
 }
-.box:hover {
-  background-color: #007bff;
-  cursor: pointer;
-  transition: 0.3s;
+
+.box:not(:nth-child(1)) {
+  height: 200px;
 }
 
 .box.hidden {
@@ -59,6 +57,7 @@
   grid-area: b1;
   position: relative;
   top: 30%;
+  height: 80px;
 }
 
 .box:nth-child(1):hover {
@@ -71,11 +70,6 @@
   /* background-image: url("/public/assets/Hero-Background.png"); */
   background-size: cover;
   box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-.box:nth-child(2):hover {
-  background-color: #007bff;
-  cursor: pointer;
-  transition: 0.3s;
 }
 
 .box:nth-child(3) {
@@ -124,11 +118,42 @@
 
 .box-content {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
   font-size: 17px;
+  width: 90%;
+  justify-items: start;
 }
 
+.box-content .material {
+  background-color: gold;
+  height: 40px;
+  border-radius: 50px 50px 50px 50px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 25%;
+  font-weight: 400;
+}
+
+.box-content .date {
+  position: relative;
+  font-weight: 400;
+}
+.update-delete-box {
+  width: 100%;
+  display: flex; /* Enable Flexbox */
+  justify-content: space-between; /* Position children at opposite ends */
+  align-items: center; /* Align items vertically */
+}
+
+.icon-edit {
+  cursor: pointer; /* Makes the cursor a pointer */
+  transition: color 0.3s; /* Smooth color transition */
+}
+
+.icon-edit:hover {
+  color: rgb(5, 141, 165); /* Change to your desired hover color */
+}
 /* Mobile views */
 @media (max-width: 1224px) {
   .categoriesmain {

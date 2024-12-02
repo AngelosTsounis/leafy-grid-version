@@ -5,10 +5,11 @@ import { IconContext } from "react-icons";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-
+import { calculateRanks } from "../components/Dashboard/Utilities/RankUnits";
 import DashboardHome from "../components/Dashboard/Home/home";
 import Calendar from "../components/Dashboard/Calendar/calendar";
 import SidebarData from "../components/Dashboard/Utilities/SidebarData";
+
 import {
   getAllRecyclingActivities,
   updateProfile,
@@ -28,6 +29,10 @@ const Dashboard = () => {
   const [activeItem, setActiveItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [pointsAwarded, setPointsAwarded] = useState(0);
+  const [currentRank, setCurrentRank] = useState({
+    name: "Novice",
+    icon: "/assets/Novice.png",
+  });
 
   // Fetch user profile
   useEffect(() => {
@@ -79,27 +84,6 @@ const Dashboard = () => {
   }, []);
 
   // Handle profile update
-  const handleSaveChanges = async () => {
-    const { username, email, password, newPassword, id } = profile;
-
-    if (!id || !username.trim() || !email.trim()) {
-      alert("Username, Email, and ID cannot be empty.");
-      return;
-    }
-
-    try {
-      await updateProfile(id, {
-        username: username.trim(),
-        email: email.trim(),
-        passwordHash: newPassword?.trim() || password?.trim() || "",
-      });
-      alert("Profile updated successfully.");
-      setShowModal(false);
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      alert("Failed to update profile.");
-    }
-  };
 
   // Input handler
   const handleInputChange = ({ target: { name, value } }) => {
@@ -123,6 +107,34 @@ const Dashboard = () => {
       day: "numeric",
     });
 
+  useEffect(() => {
+    const { currentRank } = calculateRanks(pointsAwarded);
+
+    setCurrentRank(currentRank);
+  }, [pointsAwarded]);
+
+  const handleSaveChanges = async () => {
+    const { username, email, password, newPassword, id } = profile;
+
+    if (!id || !username.trim() || !email.trim()) {
+      alert("Username, Email, and ID cannot be empty.");
+      return;
+    }
+
+    try {
+      await updateProfile(id, {
+        username: username.trim(),
+        email: email.trim(),
+        passwordHash: newPassword?.trim() || password?.trim() || "",
+      });
+      alert("Profile updated successfully.");
+      setShowModal(false);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile.");
+    }
+  };
+
   return (
     <div className="body">
       <IconContext.Provider value={{ color: "orange" }}>
@@ -135,11 +147,7 @@ const Dashboard = () => {
         </div>
         <div className={`nav-menu ${sidebar ? "active" : ""}`}>
           <div className="pointsEarned">
-            <img
-              className="rankingImg"
-              src="/assets/RedRupee.png"
-              alt="Rupee"
-            />
+            <img className="rankingImg" src={currentRank.icon} alt="Rupee" />
             <span className="points-number" id="currentPoints">
               {pointsAwarded ?? 0}
             </span>
@@ -147,11 +155,11 @@ const Dashboard = () => {
           <div className="current-rank-wrapper">
             <span className="current-rank-text">Current Rank</span>
             <span className="rank-text" id="currentRank">
-              Grandmaster
+              {currentRank.name}
             </span>
           </div>
           <ul className="nav-menu-items">
-            <img className="user_img" src="/assets/Tarnished.png" alt="User" />
+            <img className="user_img" src={currentRank.image} alt="User" />
             {SidebarData.map((item, index) => (
               <li
                 key={index}

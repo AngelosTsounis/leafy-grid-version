@@ -265,22 +265,67 @@ select {
 /* =====================Quote Section========================================= */
 /* =====================Quote Section========================================= */
 
-.quote-section {
-  width: 800px;
-  margin-top: 30px;
-  border-left: 3px solid rgb(216, 216, 216);
-  padding: 20px;
-  max-width: 100%;
+.rules-section {
+  padding: 15px;
+  background: linear-gradient(135deg, #d9f2e6, #a8d5ba);
+  border-radius: 10px;
+  text-align: center;
+  color: #2f4f4f;
+  border: 1px solid #81c784;
 }
 
-.quote-section h3 {
-  color: #838383;
-  font-weight: 400;
-  font-size: 26px;
+.rules-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-bottom: 15px;
 }
-.quote-section p {
-  font-weight: 700;
-  color: rgba(64, 156, 140, 255);
+
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rules-list li {
+  font-size: 0.9rem;
+  margin: 8px 0;
+  padding: 10px;
+  background-color: #eef7f0;
+  border: 1px solid #81c784;
+  border-radius: 15px;
+  color: #2e7d32;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.material-name {
+  font-weight: bold;
+  color: #1b5e20;
+}
+
+.points {
+  font-weight: bold;
+  color: #388e3c;
+}
+
+.footer-note {
+  font-size: 0.85rem;
+  color: #3b5323;
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #f0f9f4;
+  border-radius: 5px;
+  border: 1px solid #81c784;
+}
+
+.rules-title:before {
+  content: "🌿 ";
+}
+
+.rules-title:after {
+  content: " 🌿";
 }
 
 /* =====================Media Section========================================= */

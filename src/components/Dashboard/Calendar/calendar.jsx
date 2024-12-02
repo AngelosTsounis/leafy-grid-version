@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import { Modal, Button } from "react-bootstrap";
 import {
   getAllRecyclingActivities,
   updateRecyclingActivity,
+  deleteActivity,
 } from "../Utilities/ApiServices";
 
 const Calendar = () => {
@@ -67,6 +69,7 @@ const Calendar = () => {
         )
       );
       handleModalClose();
+      window.location.reload();
     } catch (error) {
       console.error("Failed to update activity:", error);
     }
@@ -80,6 +83,22 @@ const Calendar = () => {
         year: "2-digit",
       })
       .replace(",", ""); // Remove comma if necessary
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this activity?")) {
+      const success = await deleteActivity(id); // Call your delete API function
+      if (success) {
+        alert("Activity deleted successfully!");
+        window.location.reload();
+        // Optionally, refresh activities or remove the deleted one from the list
+        setRecentActivities((prevActivities) =>
+          prevActivities.filter((activity) => activity.id !== id)
+        );
+      } else {
+        alert("Failed to delete the activity. Please try again.");
+      }
+    }
   };
 
   return (
@@ -142,13 +161,28 @@ const Calendar = () => {
           )
           .map((activity) => (
             <div key={activity.id} className={`box filter-app`}>
-              <div
-                className="box-content"
-                onClick={() => handleModalShow(activity)}
-              >
-                <p>Material Type: {activity.materialType}</p>
-                <p>Quantity Recycled: {activity.quantity}</p>
-                <p>Date: {formatDate(activity.date)}</p>{" "}
+              <div className="box-content">
+                <h3 className="fw-500 fs-4">{activity.location}</h3>
+                <p>
+                  Great job! You recycled a total quantity of
+                  <strong> {activity.quantity} kg</strong>
+                </p>
+                <p className="date">{formatDate(activity.date)}</p>{" "}
+                <div className="update-delete-box d-flex">
+                  <p className="material">{activity.materialType}</p>
+                  <span>
+                    <i
+                      className="icon-edit bi bi-pencil-square mx-2"
+                      onClick={() => handleModalShow(activity)}
+                    ></i>{" "}
+                    {/* Edit icon */}
+                    <i
+                      className="bi bi-trash"
+                      onClick={() => handleDelete(activity.id)}
+                    ></i>{" "}
+                    {/* Delete icon */}
+                  </span>
+                </div>
                 {/* Display formatted date */}
               </div>
             </div>
@@ -183,6 +217,18 @@ const Calendar = () => {
                   className="form-control"
                   id="quantity"
                   value={updatedActivity.quantity || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="location" className="form-label">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="location"
+                  value={updatedActivity.location || ""}
                   onChange={handleInputChange}
                 />
               </div>
