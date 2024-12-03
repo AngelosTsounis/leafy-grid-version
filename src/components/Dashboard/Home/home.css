@@ -208,13 +208,14 @@ select {
 .next-rank-image {
   width: 100%;
   height: auto;
-  max-width: 220px;
-  max-height: 220px;
+  max-width: 190px;
+  max-height: 190px;
   border-radius: 50%;
   object-fit: cover;
   overflow: hidden;
   position: relative;
-  left: 10%;
+  left: 20%;
+  top: -7%;
 }
 
 .next-rank-rupee {
@@ -223,6 +224,35 @@ select {
 }
 .next-rank-50 {
   color: rgba(64, 156, 140, 255);
+}
+
+.rank-progress p {
+  font-size: 14px;
+  color: #646464;
+  margin: 0;
+  top: -120%;
+  position: relative;
+  left: 2%;
+}
+
+.progress-bar {
+  height: 12px;
+  background: #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+  overflow: hidden;
+  width: 80%;
+  top: -120%;
+  position: relative;
+  border: 1px solid black;
+  left: 2%;
+  transition: width 0.5s ease-in-out; /* Smooth animation */
+}
+
+.progress-bar-filled {
+  height: 100%;
+  background: rgba(64, 156, 140, 255);
+  transition: width 0.3s ease;
 }
 
 /* =====================Next Rank========================================= */

@@ -15,6 +15,7 @@ const Home = () => {
   const [mostCommonMaterial, setMostCommonMaterial] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
   const [nextRank, setNextRank] = useState(null);
+  const [progressPercentage, setProgressPercentage] = useState(0); // New state for progress percentage
 
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value);
@@ -145,6 +146,21 @@ const Home = () => {
     // Set state with next rank details
     setNextRank(nextRank);
   }, [totalQuantity]); // Trigger recalculation whenever totalQuantity changes
+
+  useEffect(() => {
+    // Calculate progress percentage
+    if (nextRank && nextRank.minPoints > 0) {
+      const percentage = Math.min(
+        (totalQuantity / nextRank.minPoints) * 100,
+        100 // Cap percentage at 100%
+      );
+      setProgressPercentage(percentage);
+    } else {
+      setProgressPercentage(0); // No progress if no next rank
+    }
+  }, [totalQuantity, nextRank]); // Recalculate whenever totalQuantity or nextRank changes
+
+  // Other code remains unchanged
   return (
     <>
       <div className="dashboardmain">
@@ -271,6 +287,15 @@ const Home = () => {
               src={nextRank ? nextRank.image : "/assets/placeholder.jpg"}
               alt="Next Rank"
             />
+          </div>
+          <div className="rank-progress">
+            <p>Progress to next rank:</p>
+            <div className="progress-bar">
+              <div
+                className="progress-bar-filled"
+                style={{ width: `${progressPercentage}%` }} // Example hardcoded progress percentage
+              ></div>
+            </div>
           </div>
         </div>
         <div className="card">
