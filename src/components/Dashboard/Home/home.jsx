@@ -5,6 +5,8 @@ import {
 } from "../Utilities/ApiServices";
 import "./home.css";
 import { calculateRanks } from "../Utilities/RankUnits";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
   const [material, setMaterial] = useState("Plastic");
@@ -14,8 +16,12 @@ const Home = () => {
   const [totalQuantity, setTotalQuantity] = useState(null);
   const [mostCommonMaterial, setMostCommonMaterial] = useState(null);
   const [recentActivities, setRecentActivities] = useState([]);
+  const [currentRank, setCurrentRank] = useState({
+    name: "Novice",
+    icon: "/assets/Novice.png",
+  });
   const [nextRank, setNextRank] = useState(null);
-  const [progressPercentage, setProgressPercentage] = useState(0); // New state for progress percentage
+  const [progressPercentage, setProgressPercentage] = useState(0);
 
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value);
@@ -34,9 +40,10 @@ const Home = () => {
       return;
     }
 
-    const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
-    console.log("JWT Token in handleSubmit:", token); // Log the token here
+    const token = localStorage.getItem("jwtToken");
+    console.log("JWT Token in handleSubmit:", token);
     if (!token) {
+      toast.error("Authentication required. Please log in.");
       return;
     }
 
@@ -50,16 +57,15 @@ const Home = () => {
     try {
       const response = await submitRecyclingData(data, token);
       if (response.status === 201) {
-        console.log("Success:", response.data);
-        alert("Data submitted successfully!");
-        setQuantity(""); // Clear input field after success
-
-        // Reload the page to fetch updated data
-        window.location.reload();
+        toast.success("Data submitted successfully!");
+        setQuantity("");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error submitting data. Please try again.");
+      toast.error("Error submitting data. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -144,6 +150,7 @@ const Home = () => {
     console.log("Next Rank:", nextRank);
 
     // Set state with next rank details
+    setCurrentRank(currentRank);
     setNextRank(nextRank);
   }, [totalQuantity]); // Trigger recalculation whenever totalQuantity changes
 
@@ -163,6 +170,13 @@ const Home = () => {
   // Other code remains unchanged
   return (
     <>
+      {/* ToastContainer to display the toasts */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
+
       <div className="dashboardmain">
         <div className="card">
           <div className="input-wrapper">
@@ -245,7 +259,7 @@ const Home = () => {
             </div>
             <div className="current-reward">
               <h1 className="progress-title">Current Reward</h1>
-              <p className="progress-p">Bonsai Tree</p>
+              <p className="progress-p">{currentRank.reward}</p>
             </div>
           </div>
         </div>
@@ -262,7 +276,7 @@ const Home = () => {
                       <p className="mt-2">
                         <img
                           className="next-rank-rupee"
-                          src="/assets/PurpleRupee.png"
+                          src={nextRank.icon}
                           alt="Rupee"
                         />
                         <span className="next-rank-50">
@@ -293,14 +307,14 @@ const Home = () => {
             <div className="progress-bar">
               <div
                 className="progress-bar-filled"
-                style={{ width: `${progressPercentage}%` }} // Example hardcoded progress percentage
+                style={{ width: `${progressPercentage}%` }}
               ></div>
             </div>
           </div>
         </div>
         <div className="card">
           <div className="recent-recycle-header d-flex align-items-center justify-content-sm-between">
-            <h1>Recently Recycled</h1> <a href="#">View More</a>
+            <h1>Recently Recycled</h1>
           </div>
           <div className="recent-recycle-results d-flex justify-content-sm-around">
             {recentActivities.length > 0 ? (
@@ -323,19 +337,19 @@ const Home = () => {
             <ul className="rules-list">
               <li>
                 <span className="material-name">🪟 Glass:</span>{" "}
-                <span className="points">2-10 kg = 2 points</span>
+                <span className="points">Quantity * 2</span>
               </li>
               <li>
                 <span className="material-name">🛍️ Plastic:</span>{" "}
-                <span className="points">1-5 kg = 3 points</span>
+                <span className="points">Quantity * 3</span>
               </li>
               <li>
                 <span className="material-name">🔧 Metal:</span>{" "}
-                <span className="points">5-15 kg = 4 points</span>
+                <span className="points">Quantity * 4</span>
               </li>
               <li>
                 <span className="material-name">📜 Paper:</span>{" "}
-                <span className="points">10-20 kg = 5 points</span>
+                <span className="points">Quantity * 1</span>
               </li>
             </ul>
             <p className="footer-note">

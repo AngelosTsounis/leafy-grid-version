@@ -138,7 +138,12 @@ input:focus {
   height: 1300px;
   border-radius: 0px 0px 0px 2000px;
 }
-
+.error-txt {
+  color: rgb(235, 131, 72);
+  font-size: 14px;
+  margin-top: 5px;
+  padding-left: 10px;
+}
 /* =======================================Media==================================================== */
 @media screen and (max-width: 2134px) {
   .background_image {

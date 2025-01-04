@@ -1,36 +1,32 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate to redirect after successful signup
-import axios from "axios"; // Import axios for HTTP requests
-import logo from "/public/assets/logo.png";
+import { Link, useNavigate } from "react-router-dom"; // For navigation
+import axios from "axios"; // HTTP requests
+import { signupSchema } from "../../Validators/signupSchema"; // Import validation schema
+import logo from "/public/assets/logo.png"; // Your logo file
 import "./signup.css";
+import { ToastContainer, toast } from "react-toastify"; // Import Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 
 const Signup = () => {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State to handle errors
+  const [error, setError] = useState({}); // Changed to object to store individual errors
   const [loading, setLoading] = useState(false); // Optional: for handling loading state
   const navigate = useNavigate(); // Hook to redirect after signup
 
   // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError({}); // Clear any previous errors
 
-    if (!username || !email || !password) {
-      setError("All fields are required.");
-      return;
-    }
-
-    setLoading(true);
-    setError(""); // Clear any previous errors
-
-    const data = {
-      username,
-      email,
-      password,
-    };
+    const data = { username, password };
 
     try {
+      // Validate inputs using Yup
+      await signupSchema.validate(data, { abortEarly: false });
+
+      setLoading(true);
+
       const response = await axios.post(
         "https://localhost:7007/api/auth/signup",
         data,
@@ -42,24 +38,30 @@ const Signup = () => {
       );
 
       if (response.status === 200) {
-        // Success, redirect to login page or show success message
         alert("Account created successfully. Please log in.");
         navigate("/signin"); // Redirect to signin page
       }
-    } catch (error) {
-      // Handle error response
-      if (error.response) {
-        // The server responded with a status other than 2xx
-        setError(
-          error.response.data.message ||
-            "Something went wrong, please try again."
-        );
-      } else if (error.request) {
-        // The request was made but no response was received
-        setError("Network error, please try again later.");
+    } catch (err) {
+      if (err.name === "ValidationError") {
+        // Validation errors from Yup
+        const errorMessages = err.inner.reduce((acc, error) => {
+          acc[error.path] = error.message; // Store each error by field name
+          return acc;
+        }, {});
+        setError(errorMessages);
+      } else if (err.response) {
+        // Server-side error
+        setError({
+          general:
+            err.response.data.message ||
+            "Something went wrong. Please try again.",
+        });
+      } else if (err.request) {
+        // Network error
+        setError({ general: "Network error, please try again later." });
       } else {
-        // Something else happened while setting up the request
-        setError("Error occurred while making the request.");
+        // Other unknown error
+        setError({ general: "An error occurred, please try again." });
       }
     } finally {
       setLoading(false); // Reset loading state
@@ -68,6 +70,12 @@ const Signup = () => {
 
   return (
     <div className="d-flex">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
+
       <Link to="/">
         <img src={logo} className="logo_signup" alt="Logo" />
       </Link>
@@ -80,35 +88,40 @@ const Signup = () => {
           <div className="contact_container_container">
             <div className="contact_container">
               <div className="inputs">
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoComplete="off"
-                  className="item1"
-                  id="name"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="off"
-                  className="item2"
-                  id="password"
-                />
-                <input
-                  type="email"
-                  placeholder="E-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="off"
-                  id="email"
-                  className="item2"
-                />
-                {error && <div className="error-txt">{error}</div>}{" "}
-                {/* Display error message */}
+                <div className="input-container">
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="off"
+                    className="item1"
+                    id="name"
+                  />
+                  {error.username && (
+                    <div className="error-txt">{error.username}</div>
+                  )}{" "}
+                  {/* Username error */}
+                </div>
+                <div className="input-container">
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="off"
+                    className="item2"
+                    id="password"
+                  />
+                  {error.password && (
+                    <div className="error-txt">{error.password}</div>
+                  )}{" "}
+                  {/* Password error */}
+                </div>
+                {error.general && (
+                  <div className="error-txt">{error.general}</div>
+                )}{" "}
+                {/* General error */}
                 <div className="under_inputs d-flex">
                   <label>
                     <input type="checkbox" className="item3" />

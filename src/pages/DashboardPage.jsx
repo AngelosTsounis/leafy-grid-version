@@ -5,11 +5,13 @@ import { IconContext } from "react-icons";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { profileUpdateSchema } from "../components/Validators/profileUpdateSchema"; // Import the schema
 import { calculateRanks } from "../components/Dashboard/Utilities/RankUnits";
 import DashboardHome from "../components/Dashboard/Home/home";
 import Calendar from "../components/Dashboard/Calendar/calendar";
 import SidebarData from "../components/Dashboard/Utilities/SidebarData";
-
+import { toast } from "react-toastify"; // Import Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 import {
   getAllRecyclingActivities,
   updateProfile,
@@ -21,7 +23,6 @@ import logo from "/public/assets/logo.png";
 const Dashboard = () => {
   const [profile, setProfile] = useState({
     username: "",
-    email: "",
     password: "",
     newPassword: "",
   });
@@ -33,8 +34,8 @@ const Dashboard = () => {
     name: "Novice",
     icon: "/assets/Novice.png",
   });
+  const [error, setError] = useState({});
 
-  // Fetch user profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -67,7 +68,6 @@ const Dashboard = () => {
       try {
         const data = await getAllRecyclingActivities(); // Or your endpoint for user activities
         if (data && Array.isArray(data.items)) {
-          // Assume backend already calculates and includes total points
           setPointsAwarded(
             data.items.reduce(
               (sum, activity) => sum + activity.pointsAwarded,
@@ -83,20 +83,64 @@ const Dashboard = () => {
     fetchUserPoints();
   }, []);
 
-  // Handle profile update
-
   // Input handler
-  const handleInputChange = ({ target: { name, value } }) => {
+  const handleInputChange = async ({ target: { name, value } }) => {
     setProfile((prev) => ({ ...prev, [name]: value }));
+
+    try {
+      // Dynamically validate the single field
+      await profileUpdateSchema.validateAt(name, { [name]: value });
+      setError((prev) => ({ ...prev, [name]: "" })); // Clear error
+    } catch (err) {
+      setError((prev) => ({ ...prev, [name]: err.message })); // Set error
+    }
   };
 
-  // Utilities
+  // Handle save changes
+  const handleSaveChanges = async () => {
+    try {
+      // Validate the form using Yup
+      await profileUpdateSchema.validate(profile, { abortEarly: false });
+
+      const { username, password, newPassword, id } = profile;
+
+      if (!id || !username.trim()) {
+        toast.error("Username cannot be empty.");
+        return;
+      }
+
+      // Call the updateProfile API function
+      await updateProfile(id, {
+        username: username.trim(),
+        passwordHash: newPassword?.trim() || password?.trim() || "",
+      });
+
+      toast.success("Profile updated successfully.");
+      setShowModal(false);
+    } catch (validationError) {
+      if (validationError.name === "ValidationError") {
+        const newError = {};
+        validationError.inner.forEach((err) => {
+          newError[err.path] = err.message;
+        });
+        setError(newError);
+      } else {
+        console.error("Failed to update profile:", validationError);
+        toast.error("Failed to update profile.");
+      }
+    }
+  };
+
+  // Toggle sidebar
   const toggleSidebar = () => setSidebar((prev) => !prev);
+
+  // Modal handlers
   const handleMenuItemClick = (index) => {
     SidebarData[index].title === "My Profile"
       ? setShowModal(true)
       : setActiveItem(index);
   };
+
   const handleClose = () => setShowModal(false);
 
   const formatDate = (date) =>
@@ -109,31 +153,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const { currentRank } = calculateRanks(pointsAwarded);
-
     setCurrentRank(currentRank);
   }, [pointsAwarded]);
-
-  const handleSaveChanges = async () => {
-    const { username, email, password, newPassword, id } = profile;
-
-    if (!id || !username.trim() || !email.trim()) {
-      alert("Username, Email, and ID cannot be empty.");
-      return;
-    }
-
-    try {
-      await updateProfile(id, {
-        username: username.trim(),
-        email: email.trim(),
-        passwordHash: newPassword?.trim() || password?.trim() || "",
-      });
-      alert("Profile updated successfully.");
-      setShowModal(false);
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      alert("Failed to update profile.");
-    }
-  };
 
   return (
     <div className="body">
@@ -193,17 +214,24 @@ const Dashboard = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            {["username", "email", "newPassword"].map((field) => (
+            {["username", "newPassword"].map((field) => (
               <Form.Group key={field} controlId={`form${field}`}>
                 <Form.Label>
-                  {field === "newPassword" ? "New Password" : field}
+                  {field === "newPassword"
+                    ? "New Password"
+                    : field.charAt(0).toUpperCase() + field.slice(1)}{" "}
+                  {/* Capitalize */}
                 </Form.Label>
                 <Form.Control
                   type={field.includes("password") ? "password" : "text"}
                   name={field}
                   value={profile[field]}
                   onChange={handleInputChange}
+                  isInvalid={error[field]}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {error[field]}
+                </Form.Control.Feedback>
               </Form.Group>
             ))}
           </Form>

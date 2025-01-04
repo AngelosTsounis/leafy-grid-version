@@ -8,11 +8,15 @@ const Hero = () => {
       <div className="hero1">
         <div className="hero1_containers">
           <h1 className="hero_text">
-            Track your recycling history and get Rewards!
+            Turn Recycling Into a Game! Level Up, Earn Rewards & Save the
+            Planet!
           </h1>
           <p className="hero_p">
-            Innovative super web app which offers more than just recycling
-            schedules. It’s a way of life in order to make the planet green.
+            Welcome to the ultimate recycling experience! Track your recycling
+            progress, unlock exciting levels, and earn exciting rewards for
+            making a difference. Recycling isn’t just a habit; it’s a fun,
+            rewarding journey toward a greener planet. Are you ready to join the
+            eco-hero leaderboard and make every item count?
           </p>
           <div>
             <Link to="/signin">

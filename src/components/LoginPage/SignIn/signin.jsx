@@ -41,7 +41,6 @@ const SignIn = () => {
       if (response.status === 200) {
         const token = response.data.token;
         localStorage.setItem("jwtToken", token);
-        alert("Login successful!");
         navigate("/dashboard");
       }
     } catch (error) {

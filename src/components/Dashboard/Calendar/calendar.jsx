@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { ToastContainer, toast } from "react-toastify"; // Import Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 import { Modal, Button } from "react-bootstrap";
 import {
   getAllRecyclingActivities,
@@ -15,6 +16,7 @@ const Calendar = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [updatedActivity, setUpdatedActivity] = useState({});
+  const [errors, setErrors] = useState({}); // For validation errors
 
   // Fetch activities on mount
   useEffect(() => {
@@ -45,6 +47,7 @@ const Calendar = () => {
     setSelectedActivity(activity);
     setUpdatedActivity(activity);
     setShowModal(true);
+    setErrors({}); // Clear previous errors
   };
 
   const handleModalClose = () => {
@@ -52,12 +55,56 @@ const Calendar = () => {
     setSelectedActivity(null);
   };
 
+  const validateField = (field, value) => {
+    let errorMessage = "";
+    if (field === "materialType") {
+      if (!value) {
+        errorMessage = "MaterialType is required.";
+      } else if (!["Glass", "Paper", "Plastic", "Metal"].includes(value)) {
+        errorMessage =
+          "MaterialType must be one of the following: Glass, Paper, Plastic, or Metal.";
+      }
+    }
+    if (field === "quantity") {
+      if (!value || isNaN(value) || value <= 0) {
+        errorMessage = "Quantity must be a positive number.";
+      }
+    }
+    if (field === "location") {
+      if (!value) {
+        errorMessage = "Location is required.";
+      } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+        errorMessage = "Location must contain only letters and spaces.";
+      }
+    }
+    return errorMessage;
+  };
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setUpdatedActivity({ ...updatedActivity, [id]: value });
+
+    // Validate input field
+    const errorMessage = validateField(id, value);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [id]: errorMessage,
+    }));
   };
 
   const handleSaveChanges = async () => {
+    let validationErrors = {};
+    // Validate all fields before submitting
+    Object.keys(updatedActivity).forEach((field) => {
+      const error = validateField(field, updatedActivity[field]);
+      if (error) validationErrors[field] = error;
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors); // Set errors and stop submission
+      return;
+    }
+
     if (!updatedActivity || !updatedActivity.id) return;
 
     try {
@@ -74,6 +121,21 @@ const Calendar = () => {
       console.error("Failed to update activity:", error);
     }
   };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this activity?")) {
+      const success = await deleteActivity(id);
+      if (success) {
+        toast.success("Activity deleted successfully!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        toast.error("Failed to delete the activity. Please try again.");
+      }
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date
@@ -85,24 +147,14 @@ const Calendar = () => {
       .replace(",", ""); // Remove comma if necessary
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this activity?")) {
-      const success = await deleteActivity(id); // Call your delete API function
-      if (success) {
-        alert("Activity deleted successfully!");
-        window.location.reload();
-        // Optionally, refresh activities or remove the deleted one from the list
-        setRecentActivities((prevActivities) =>
-          prevActivities.filter((activity) => activity.id !== id)
-        );
-      } else {
-        alert("Failed to delete the activity. Please try again.");
-      }
-    }
-  };
-
   return (
     <>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
+
       <div className="categoriesmain">
         <div className="box">
           <div className="filters_and_items">
@@ -207,6 +259,9 @@ const Calendar = () => {
                   value={updatedActivity.materialType || ""}
                   onChange={handleInputChange}
                 />
+                {errors.materialType && (
+                  <div className="text-danger">{errors.materialType}</div>
+                )}
               </div>
               <div className="mb-3">
                 <label htmlFor="quantity" className="form-label">
@@ -219,6 +274,9 @@ const Calendar = () => {
                   value={updatedActivity.quantity || ""}
                   onChange={handleInputChange}
                 />
+                {errors.quantity && (
+                  <div className="text-danger">{errors.quantity}</div>
+                )}
               </div>
               <div className="mb-3">
                 <label htmlFor="location" className="form-label">
@@ -231,30 +289,9 @@ const Calendar = () => {
                   value={updatedActivity.location || ""}
                   onChange={handleInputChange}
                 />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="date" className="form-label">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="date"
-                  value={updatedActivity.date?.split("T")[0] || ""}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="pointsEarned" className="form-label">
-                  Points Earned
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="pointsEarned"
-                  value={updatedActivity.pointsEarned || 0}
-                  onChange={handleInputChange}
-                />
+                {errors.location && (
+                  <div className="text-danger">{errors.location}</div>
+                )}
               </div>
             </form>
           )}
