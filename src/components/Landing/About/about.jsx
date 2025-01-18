@@ -7,10 +7,10 @@ const About = () => {
       <div className="about_container">
         <h1 className="h1_about">About Leafy</h1>
         <p className="p_about">
-          Find your peace of mind, flexibility, and confidence to embrace your
-          next adventure in one of the most iconic neighbourhoods of Athens
-          city. Under the momentous gaze of the Acropolis, our apartments offer
-          the ultimate experience of luxury along with tradition and history.
+          At Leafy, we've transformed recycling into a fun and rewarding
+          experience by gamifying the process. Every milestone you achieve
+          brings you closer to climbing the ranks and unlocking amazing gifts.
+          Start recycling today and turn your efforts into exciting rewards!
         </p>
       </div>
       <div className="img_container">
@@ -18,7 +18,7 @@ const About = () => {
           <div className="img_about1">
             <img
               className="eikona1"
-              src="/assets/HeroBackground2.jpg"
+              src="/assets/Leafy_About1.png"
               alt="Garden1"
             />
           </div>
@@ -26,7 +26,7 @@ const About = () => {
             <div className="img_about2">
               <img
                 className="eikona2"
-                src="/assets/Hero-Background.png"
+                src="/assets/Leafy_About2.png"
                 alt="Garden2"
               />
             </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./calendar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ToastContainer, toast } from "react-toastify"; // Import Toastify
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Modal, Button } from "react-bootstrap";
 import {
   getAllRecyclingActivities,
@@ -16,9 +16,8 @@ const Calendar = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [updatedActivity, setUpdatedActivity] = useState({});
-  const [errors, setErrors] = useState({}); // For validation errors
+  const [errors, setErrors] = useState({});
 
-  // Fetch activities on mount
   useEffect(() => {
     fetchActivities();
   }, []);
@@ -47,7 +46,7 @@ const Calendar = () => {
     setSelectedActivity(activity);
     setUpdatedActivity(activity);
     setShowModal(true);
-    setErrors({}); // Clear previous errors
+    setErrors({});
   };
 
   const handleModalClose = () => {
@@ -84,7 +83,6 @@ const Calendar = () => {
     const { id, value } = e.target;
     setUpdatedActivity({ ...updatedActivity, [id]: value });
 
-    // Validate input field
     const errorMessage = validateField(id, value);
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -94,14 +92,14 @@ const Calendar = () => {
 
   const handleSaveChanges = async () => {
     let validationErrors = {};
-    // Validate all fields before submitting
+
     Object.keys(updatedActivity).forEach((field) => {
       const error = validateField(field, updatedActivity[field]);
       if (error) validationErrors[field] = error;
     });
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors); // Set errors and stop submission
+      setErrors(validationErrors);
       return;
     }
 
@@ -144,7 +142,22 @@ const Calendar = () => {
         month: "2-digit",
         year: "2-digit",
       })
-      .replace(",", ""); // Remove comma if necessary
+      .replace(",", "");
+  };
+
+  const getMaterialColor = (materialType) => {
+    switch (materialType.toLowerCase()) {
+      case "plastic":
+        return "#f0ad4e";
+      case "glass":
+        return "#5bc0de";
+      case "metal":
+        return "#d9534f";
+      case "paper":
+        return "#5cb85c";
+      default:
+        return "gold";
+    }
   };
 
   return (
@@ -156,89 +169,100 @@ const Calendar = () => {
       />
 
       <div className="categoriesmain">
-        <div className="box">
-          <div className="filters_and_items">
-            <ul className="portfolio_filters" id="portfolioFilters">
-              <li
-                data-filter="*"
-                className={filter === "*" ? "filter-active" : ""}
-                onClick={() => handleFilterChange("*")}
-              >
-                All
-              </li>
-              <li
-                data-filter=".filter-glass"
-                className={filter === ".filter-glass" ? "filter-active" : ""}
-                onClick={() => handleFilterChange(".filter-glass")}
-              >
-                Glass
-              </li>
-              <li
-                data-filter=".filter-plastic"
-                className={filter === ".filter-plastic" ? "filter-active" : ""}
-                onClick={() => handleFilterChange(".filter-plastic")}
-              >
-                Plastic
-              </li>
-              <li
-                data-filter=".filter-paper"
-                className={filter === ".filter-paper" ? "filter-active" : ""}
-                onClick={() => handleFilterChange(".filter-paper")}
-              >
-                Paper
-              </li>
-              <li
-                data-filter=".filter-metal"
-                className={filter === ".filter-metal" ? "filter-active" : ""}
-                onClick={() => handleFilterChange(".filter-metal")}
-              >
-                Metal
-              </li>
-            </ul>
-          </div>
+        <h2 className="calendarTitle">Track your recycling history</h2>
+        {/* Filter Box */}
+        <div className="filters_and_items">
+          <ul className="portfolio_filters" id="portfolioFilters">
+            <li
+              data-filter="*"
+              className={filter === "*" ? "filter-active" : ""}
+              onClick={() => handleFilterChange("*")}
+            >
+              All
+            </li>
+            <li
+              data-filter=".filter-glass"
+              className={filter === ".filter-glass" ? "filter-active" : ""}
+              onClick={() => handleFilterChange(".filter-glass")}
+            >
+              Glass
+            </li>
+            <li
+              data-filter=".filter-plastic"
+              className={filter === ".filter-plastic" ? "filter-active" : ""}
+              onClick={() => handleFilterChange(".filter-plastic")}
+            >
+              Plastic
+            </li>
+            <li
+              data-filter=".filter-paper"
+              className={filter === ".filter-paper" ? "filter-active" : ""}
+              onClick={() => handleFilterChange(".filter-paper")}
+            >
+              Paper
+            </li>
+            <li
+              data-filter=".filter-metal"
+              className={filter === ".filter-metal" ? "filter-active" : ""}
+              onClick={() => handleFilterChange(".filter-metal")}
+            >
+              Metal
+            </li>
+          </ul>
         </div>
 
-        {activities
-          .filter(
-            (activity) =>
-              filter === "*" ||
-              (filter === ".filter-glass" &&
-                activity.materialType.toLowerCase() === "glass") ||
-              (filter === ".filter-plastic" &&
-                activity.materialType.toLowerCase() === "plastic") ||
-              (filter === ".filter-paper" &&
-                activity.materialType.toLowerCase() === "paper") ||
-              (filter === ".filter-metal" &&
-                activity.materialType.toLowerCase() === "metal")
-          )
-          .map((activity) => (
-            <div key={activity.id} className={`box filter-app`}>
-              <div className="box-content">
-                <h3 className="fw-500 fs-4">{activity.location}</h3>
-                <p>
-                  Great job! You recycled a total quantity of
-                  <strong> {activity.quantity} kg</strong>
-                </p>
-                <p className="date">{formatDate(activity.date)}</p>{" "}
-                <div className="update-delete-box d-flex">
-                  <p className="material">{activity.materialType}</p>
-                  <span>
-                    <i
-                      className="icon-edit bi bi-pencil-square mx-2"
-                      onClick={() => handleModalShow(activity)}
-                    ></i>{" "}
-                    {/* Edit icon */}
-                    <i
-                      className="bi bi-trash"
-                      onClick={() => handleDelete(activity.id)}
-                    ></i>{" "}
-                    {/* Delete icon */}
-                  </span>
+        {/* Grid of Boxes */}
+        <div className="box-container">
+          {activities
+            .filter(
+              (activity) =>
+                filter === "*" ||
+                (filter === ".filter-glass" &&
+                  activity.materialType.toLowerCase() === "glass") ||
+                (filter === ".filter-plastic" &&
+                  activity.materialType.toLowerCase() === "plastic") ||
+                (filter === ".filter-paper" &&
+                  activity.materialType.toLowerCase() === "paper") ||
+                (filter === ".filter-metal" &&
+                  activity.materialType.toLowerCase() === "metal")
+            )
+            .map((activity) => (
+              <div key={activity.id} className={`box filter-app`}>
+                <div className="box-content">
+                  <h3 className="fw-500 fs-4">{activity.location}</h3>
+                  <p>
+                    Great job! You recycled a total quantity of
+                    <strong> {activity.quantity} kg</strong>
+                  </p>
+                  <p className="date">{formatDate(activity.date)}</p>{" "}
+                  <div className="update-delete-box d-flex">
+                    <p
+                      className="material"
+                      style={{
+                        backgroundColor: getMaterialColor(
+                          activity.materialType
+                        ),
+                      }}
+                    >
+                      {activity.materialType}
+                    </p>
+                    <span>
+                      <i
+                        className="icon-edit bi bi-pencil-square mx-2"
+                        onClick={() => handleModalShow(activity)}
+                      ></i>{" "}
+                      {/* Edit icon */}
+                      <i
+                        className="bi bi-trash"
+                        onClick={() => handleDelete(activity.id)}
+                      ></i>{" "}
+                      {/* Delete icon */}
+                    </span>
+                  </div>
                 </div>
-                {/* Display formatted date */}
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
 
       <Modal show={showModal} onHide={handleModalClose}>

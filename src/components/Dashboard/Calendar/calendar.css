@@ -1,19 +1,50 @@
 .categoriesmain {
-  grid-column: 2/3;
-  grid-row: 2/3;
-  display: grid;
+  display: flex;
+  flex-direction: column; /* Stack filter box on top of the grid */
   margin-top: 80px;
   padding: 20px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: -1fr;
-  grid-template-areas:
-    "b1 b1 b1" "b2 b3 b4"
-    "b5 b6 b7"
-    "b8 b9 b10";
-  margin-left: 150px;
-  transition: grid-template-areas 0.5s ease, grid-template-columns 0.5s ease,
-    grid-template-rows 0.5s ease;
-  gap: 20px;
+  gap: 20px; /* Add spacing between filter box and grid */
+
+  max-height: calc(100vh - 100px); /* Ensure space for scrolling */
+  overflow-y: auto; /* Allow scrolling if content exceeds height */
+}
+
+.calendarTitle {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-right: 220px;
+  color: rgba(8, 110, 105, 0.616);
+}
+
+.box-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
+  grid-auto-rows: 200px; /* Row height */
+  gap: 20px; /* Spacing between boxes */
+}
+
+/* Box Styling */
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
+}
+
+.filters_and_items {
+  display: flex;
+  justify-content: center; /* Center align filters */
+  align-items: center; /* Vertically align filters */
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 10px; /* Rounded corners */
+  margin-right: 230px;
+
+  top: 0;
+  z-index: 10;
 }
 .portfolio_filters {
   list-style: none;
@@ -32,88 +63,6 @@
 .filter-active {
   background-color: #007bff;
   color: white;
-}
-
-.box {
-  width: 100%; /* Adjust to fill available space */
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  display: flex;
-  justify-content: center; /* Horizontally center content */
-  align-items: center; /* Vertically center content */
-  border-radius: 20px;
-}
-
-.box:not(:nth-child(1)) {
-  height: 200px;
-}
-
-.box.hidden {
-  opacity: 0;
-  transform: scale(0.9);
-  pointer-events: none; /* Prevent interaction with hidden boxes */
-}
-
-.box:nth-child(1) {
-  grid-area: b1;
-  position: relative;
-  top: 30%;
-  height: 80px;
-}
-
-.box:nth-child(1):hover {
-  background-color: white;
-  cursor: default;
-}
-
-.box:nth-child(2) {
-  grid-area: b2;
-  /* background-image: url("/public/assets/Hero-Background.png"); */
-  background-size: cover;
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-
-.box:nth-child(3) {
-  grid-area: b3;
-  /* background-image: url("/public/assets/HeroBackground2.jpg"); */
-  background-size: cover;
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-
-.box:nth-child(4) {
-  grid-area: b4;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-
-.box:nth-child(5) {
-  grid-area: b5;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-.box:nth-child(6) {
-  grid-area: b6;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-.box:nth-child(7) {
-  grid-area: b7;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-.box:nth-child(8) {
-  grid-area: b8;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-.box:nth-child(9) {
-  grid-area: b9;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
-}
-.box:nth-child(10) {
-  grid-area: b10;
-
-  box-shadow: 3px 5px 12px rgba(77, 76, 76, 0.404);
 }
 
 .box-content {
@@ -162,14 +111,35 @@
     grid-template-areas: initial;
     margin-left: 0;
   }
+  .box-container {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* Adjust to 2 columns on medium screens */
+  }
+  .box-container {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* Adjust to 2 columns on medium screens */
+  }
   .box {
     grid-area: initial !important;
     width: auto;
+  }
+  .calendarTitle {
+    margin-right: 0;
+  }
+  .filters_and_items {
+    margin-right: 0;
   }
 }
 
 @media (max-width: 768px) {
   .categoriesmain {
     grid-column: 1/3;
+  }
+  .box-container {
+    grid-template-columns: 1fr; /* Single column for smaller screens */
   }
 }

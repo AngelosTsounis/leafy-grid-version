@@ -27,7 +27,7 @@ const footer = () => {
             </div>
           </div>
           <div className="footer_copy">
-            2024 &#169; Leafy. All rights reserved.
+            2025 &#169; Leafy. All rights reserved.
           </div>
         </div>
       </div>
