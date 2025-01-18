@@ -5,13 +5,13 @@ import { IconContext } from "react-icons";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { profileUpdateSchema } from "../components/Validators/profileUpdateSchema"; // Import the schema
+import { profileUpdateSchema } from "../components/Validators/profileUpdateSchema";
 import { calculateRanks } from "../components/Dashboard/Utilities/RankUnits";
 import DashboardHome from "../components/Dashboard/Home/home";
 import Calendar from "../components/Dashboard/Calendar/calendar";
 import SidebarData from "../components/Dashboard/Utilities/SidebarData";
-import { toast } from "react-toastify"; // Import Toastify
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   getAllRecyclingActivities,
   updateProfile,
@@ -66,7 +66,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserPoints = async () => {
       try {
-        const data = await getAllRecyclingActivities(); // Or your endpoint for user activities
+        const data = await getAllRecyclingActivities();
         if (data && Array.isArray(data.items)) {
           setPointsAwarded(
             data.items.reduce(
@@ -90,9 +90,9 @@ const Dashboard = () => {
     try {
       // Dynamically validate the single field
       await profileUpdateSchema.validateAt(name, { [name]: value });
-      setError((prev) => ({ ...prev, [name]: "" })); // Clear error
+      setError((prev) => ({ ...prev, [name]: "" }));
     } catch (err) {
-      setError((prev) => ({ ...prev, [name]: err.message })); // Set error
+      setError((prev) => ({ ...prev, [name]: err.message }));
     }
   };
 

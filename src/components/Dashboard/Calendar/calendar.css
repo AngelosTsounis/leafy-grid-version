@@ -1,12 +1,12 @@
 .categoriesmain {
   display: flex;
-  flex-direction: column; /* Stack filter box on top of the grid */
+  flex-direction: column;
   margin-top: 80px;
   padding: 20px;
-  gap: 20px; /* Add spacing between filter box and grid */
+  gap: 20px;
 
-  max-height: calc(100vh - 100px); /* Ensure space for scrolling */
-  overflow-y: auto; /* Allow scrolling if content exceeds height */
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
 
 .calendarTitle {
@@ -19,9 +19,9 @@
 
 .box-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
-  grid-auto-rows: 200px; /* Row height */
-  gap: 20px; /* Spacing between boxes */
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 200px;
+  gap: 20px;
 }
 
 /* Box Styling */
@@ -36,11 +36,11 @@
 
 .filters_and_items {
   display: flex;
-  justify-content: center; /* Center align filters */
-  align-items: center; /* Vertically align filters */
+  justify-content: center;
+  align-items: center;
   background-color: transparent;
   padding: 10px;
-  border-radius: 10px; /* Rounded corners */
+  border-radius: 10px;
   margin-right: 230px;
 
   top: 0;
@@ -90,20 +90,20 @@
 }
 .update-delete-box {
   width: 100%;
-  display: flex; /* Enable Flexbox */
-  justify-content: space-between; /* Position children at opposite ends */
-  align-items: center; /* Align items vertically */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .icon-edit {
-  cursor: pointer; /* Makes the cursor a pointer */
-  transition: color 0.3s; /* Smooth color transition */
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
 .icon-edit:hover {
-  color: rgb(5, 141, 165); /* Change to your desired hover color */
+  color: rgb(5, 141, 165);
 }
-/* Mobile views */
+
 @media (max-width: 1224px) {
   .categoriesmain {
     grid-template-columns: 1fr;
@@ -112,16 +112,10 @@
     margin-left: 0;
   }
   .box-container {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* Adjust to 2 columns on medium screens */
+    grid-template-columns: repeat(2, 1fr);
   }
   .box-container {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* Adjust to 2 columns on medium screens */
+    grid-template-columns: repeat(2, 1fr);
   }
   .box {
     grid-area: initial !important;
@@ -140,6 +134,6 @@
     grid-column: 1/3;
   }
   .box-container {
-    grid-template-columns: 1fr; /* Single column for smaller screens */
+    grid-template-columns: 1fr;
   }
 }

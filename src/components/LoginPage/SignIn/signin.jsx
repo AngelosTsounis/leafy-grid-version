@@ -7,9 +7,9 @@ import logo from "/public/assets/logo.png";
 const SignIn = () => {
   const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State for error messages
-  const [loading, setLoading] = useState(false); // State for loading button
-  const navigate = useNavigate(); // Hook to redirect after login
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -55,7 +55,7 @@ const SignIn = () => {
         setError("An error occurred. Please try again.");
       }
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 

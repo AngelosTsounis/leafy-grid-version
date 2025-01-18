@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // For navigation
-import axios from "axios"; // HTTP requests
-import { signupSchema } from "../../Validators/signupSchema"; // Import validation schema
-import logo from "/public/assets/logo.png"; // Your logo file
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { signupSchema } from "../../Validators/signupSchema";
+import logo from "/public/assets/logo.png";
 import "./signup.css";
-import { ToastContainer, toast } from "react-toastify"; // Import Toastify
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState({}); // Changed to object to store individual errors
-  const [loading, setLoading] = useState(false); // Optional: for handling loading state
-  const navigate = useNavigate(); // Hook to redirect after signup
+  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError({}); // Clear any previous errors
+    setError({});
 
     const data = { username, password };
 

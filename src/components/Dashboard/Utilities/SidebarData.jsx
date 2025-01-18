@@ -17,7 +17,7 @@ const SidebarData = [
     cName: "nav-text",
   },
   {
-    title: "My Profile", // Profile does not navigate
+    title: "My Profile",
     icon: <FaIcons.FaUser />,
     cName: "nav-text",
   },

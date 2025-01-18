@@ -1,11 +1,11 @@
 .navbar-link {
-  font-size: 1.2rem; /* Adjust the font size as needed */
-  margin-right: 1rem; /* Adjust the margin between links */
+  font-size: 1.2rem;
+  margin-right: 1rem;
 }
 
 .navbar-button {
-  font-size: 1.2rem; /* Adjust the font size as needed */
-  margin-left: 1rem; /* Adjust the margin to the left of the button */
+  font-size: 1.2rem;
+  margin-left: 1rem;
 }
 
 .nav {
