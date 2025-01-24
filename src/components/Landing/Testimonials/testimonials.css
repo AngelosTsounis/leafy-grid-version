@@ -82,25 +82,23 @@
 @media (max-width: 2560px) {
   .testimonial_item {
     max-width: 1950px;
-    height: 300px;
+    height: auto;
   }
 }
 @media (max-width: 1880px) {
   .testimonial_item {
     max-width: 140vh;
-    height: 50vh;
   }
 }
 @media (max-width: 1792px) {
   .testimonial_item {
     max-width: 140vh;
-    height: 50vh;
+
     margin: 0 auto;
   }
 }
 @media (max-width: 912px) {
   .testimonial_item {
-    height: 450px;
   }
 }
 

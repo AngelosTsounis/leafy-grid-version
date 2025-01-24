@@ -4,7 +4,6 @@
   background-position: center;
   height: 830px;
   border-radius: 7px 0px 0px 180px;
-
   z-index: 1;
   position: relative;
 }
@@ -67,15 +66,17 @@
 }
 
 @media screen and (max-width: 1450px) {
+  .section_hero {
+    height: 730px;
+  }
   .hero1 {
-    left: -0.1%;
+    left: 4%;
     transform: none;
+    width: 700px;
+    border-radius: 0px 0px 180px 0px;
   }
   .section_hero {
     background-size: 2000px;
-  }
-  .hero1 {
-    border-radius: 0px 0px 180px 0px;
   }
 }
 

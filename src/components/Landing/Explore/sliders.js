@@ -16,7 +16,7 @@ export default [
     title: "Enjoy the Loot!",
     paragraph:
       "Leveling up in the ranks offers various rewards. The higher the rank, the greater the rewards!",
-    coverImg: ["HeroBackground2.jpg"],
+    coverImg: ["Background2.jpg"],
   },
 
   {
